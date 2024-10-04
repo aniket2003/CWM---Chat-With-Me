@@ -22,6 +22,26 @@ export const authApiSlice = apiSlice.injectEndpoints({
     }),
     // -------------------------------------------------
 
+    loginWithGoogle: builder.mutation({
+      query: (credentials) => ({
+        url: `api/auth/GoogleOAuth?code=${credentials}`,
+        method: "GET",
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const  {data}  = await queryFulfilled;
+          console.log(data)
+          dispatch(setCredentials({ accessToken: data.authtoken }));
+          dispatch(apiSlice.util.resetApiState());
+        } catch (err) {
+          console.log("Error: ", err);
+        }
+      },
+    }),
+
+
+    // -------------------------------------------------
+
     getUser: builder.mutation({
       query: () => ({
         url: "api/auth/getuser",
@@ -73,5 +93,5 @@ export const authApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useSendLogoutMutation, useRefreshMutation, useGetUserMutation } =
+export const { useLoginMutation, useLoginWithGoogleMutation, useSendLogoutMutation, useRefreshMutation, useGetUserMutation } =
   authApiSlice;

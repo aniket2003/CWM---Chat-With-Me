@@ -69,7 +69,7 @@ body {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	width: 83%;
-	height: 60%;
+	height: 65%;
 	text-align: center;
 	display: flex;
 	color: white;
@@ -103,6 +103,9 @@ body {
 	padding: 30px 0;
 	background: rgba(20, 40, 40, .8);
 	transition: .2s;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	h2 {
 	  font-weight: 300;
 	}
@@ -123,23 +126,28 @@ body {
   }
   
   
-  #join-btn {
+  #join-btn, #join-btn2 {
 	border: 1px solid rgba(10, 180, 180, 1);
-	background: rgba(20, 20, 20, .6);
+	background: rgba(20, 20, 20, 0.6);
 	font-size: 18px;
 	color: white;
-	margin-top: 20px;
 	padding: 10px 50px;
 	cursor: pointer;
-	transition: .4s;
-	&:hover {
-	  background: rgba(20, 20, 20, .8);
-	  padding: 10px 80px;
-	}
+	transition: 0.4s;
+  }
+  
+  #join-btn:hover, #join-btn2:hover {
+	background: rgba(20, 20, 20, 0.8);
+	padding: 10px 80px;
   }
 
 
-
+  .buttonsContainer {
+	display: flex;
+	justify-content: center;
+	gap: 20px; /* Add some space between the buttons */
+	margin-top: 20px;
+  }
 
   .noBullet {
 	list-style-type: none; /* Remove default list style */
@@ -157,8 +165,79 @@ body {
   .icon{
 	font-size: 2rem;
   }
-  
 
+  textarea {
+	border: 1px solid rgba(10, 180, 180, 1);
+	border-radius: 4px;
+	background: rgba(20, 20, 20, 0.2);
+	color: white;
+	outline: none;
+  }
+
+
+  
+/* Container styling */
+.container {
+	width: 100%;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	padding-top: 80px; /* Add space for the fixed navbar */
+	margin: 0 auto;
+  }
+  
+  /* Main content below the navbar */
+  .login {
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+  }
+  
+  .login h1 {
+	font-size: 1.5rem;
+	color: #2c3e50;
+	margin-bottom: 1rem;
+  }
+  
+  .login img {
+	margin-top: 1rem;
+	border: 3px solid #2c3e50;
+	border-radius: 50%;
+	object-fit: cover;
+  }
+  
+  /* Responsive layout */
+  @media (max-width: 768px) {
+	.login {
+	  padding: 1rem;
+	}
+  
+	.login h1 {
+	  font-size: 1.2rem;
+	}
+  
+	.login img {
+	  width: 100px;
+	  height: 100px;
+	}
+  }
+  
+  @media (max-width: 480px) {
+	.login {
+	  padding: 0.5rem;
+	}
+  
+	.login img {
+	  width: 80px;
+	  height: 80px;
+	}
+  
+	.login h1 {
+	  font-size: 1rem;
+	}
+  }
+  
 
 
 
