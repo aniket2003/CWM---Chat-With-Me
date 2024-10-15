@@ -2,17 +2,18 @@ import React, { useEffect, useState } from "react";
 import {
   useGetUserMutation,
   useSendLogoutMutation,
-} from "../auth/authApiSlice";
+} from "../redux/auth/authApiSlice";
 import { useNavigate } from "react-router-dom";
 import "../css/Navbar.css";
+import FindUserModal from "./FindUserModal/FindUserModal";
 const Navbar = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isFindUserModalOpen, setFindUserModalopen] = useState(false);
   const navigate = useNavigate();
   const [getuser, { isLoading }] = useGetUserMutation();
   const [logout, { isLoadinglogout }] = useSendLogoutMutation();
   const [data, setData] = useState("");
-
   const [previewImage, setPreviewImage] = useState(null);
   const [isEditing, setIsEditing] = useState({
     username: false,
@@ -60,7 +61,13 @@ const Navbar = () => {
     setModalOpen(!isModalOpen);
   };
 
+  const toggleFindUserModal = ()=>{
+    setFindUserModalopen(!isFindUserModalOpen);
+  }
+
   return (
+    <div className="Navbar">
+
     <nav className="navbar">
       <div className="navbar-left">
         <button className="dropdown-btn" onClick={toggleDropdown}>
@@ -75,7 +82,7 @@ const Navbar = () => {
             <a href="#!" onClick={handlelogout}>
               Logout
             </a>
-            <a href="/find-user">Find User</a>
+            <a href="#!" onClick={toggleFindUserModal}>Find User</a>
           </div>
         )}
       </div>
@@ -85,7 +92,7 @@ const Navbar = () => {
           src="https://res.cloudinary.com/ds7iiiezf/image/upload/v1728023544/CWM/Logo/uxwricp0salddeom4ipr.png"
           alt="Logo"
           className="navbar-logo"
-        />
+          />
       </div>
 
       <div className="navbar-right">
@@ -95,28 +102,28 @@ const Navbar = () => {
       </div>
 
       {isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
+        <div className="modal-overlay" onClick={toggleModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={toggleModal}>
               &times;
             </span>
             <h2>Edit Profile</h2>
-            <form>
+            <form className="NavbarForm">
               {/* Profile Picture Section */}
               <div className="profile-pic-section">
-                <label htmlFor="profilepic">Profile Picture:</label>
+                <label htmlFor="profilepic">Profile Picture</label>
                 <div className="profile-pic-preview">
                   {previewImage ? (
                     <img
-                      src={previewImage}
-                      alt="Profile Preview"
-                      className="profilepic_modal"
+                    src={previewImage}
+                    alt="Profile Preview"
+                    className="profilepic_modal"
                     />
                   ) : (
                     <img
-                      src={data.ProfilePic} // Use existing profile picture
-                      alt="Current Profile"
-                      className="profilepic_modal"
+                    src={data.ProfilePic} // Use existing profile picture
+                    alt="Current Profile"
+                    className="profilepic_modal"
                     />
                   )}
                 </div>
@@ -125,11 +132,11 @@ const Navbar = () => {
                   id="profilepic"
                   name="profilepic"
                   accept="image/*"
+                  className="Navbar_FileInput"
                   onChange={handleFileSelect}
                 />
               </div>
 
-              {/* Username */}
               <label htmlFor="username">Username:</label>
               <div className="username_div">
                 <input
@@ -137,39 +144,22 @@ const Navbar = () => {
                   id="username"
                   name="username"
                   value={data.username}
-                  readOnly={!isEditing.username} // Make input read-only if not in editing mode
+                  readOnly={!isEditing.username}
                   // onChange={(e) => setUsername(e.target.value)}
-                />
+                  />
                 <button type="button" onClick={() => handleEdit("username")}>
                   {isEditing.username ? "Save" : "Edit"}
                 </button>
               </div>
 
-              {/* Email */}
-              <label htmlFor="email">Email:</label>
-              <div className="email_div">
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={data.email}
-                  readOnly={!isEditing.email} // Make input read-only if not in editing mode
-                  // onChange={(e) => setEmail(e.target.value)}
-                />
-                <button type="button" onClick={() => handleEdit("email")}>
-                  {isEditing.email ? "Save" : "Edit"}
-                </button>
-              </div>
-
-              {/* Bio */}
               <label htmlFor="bio">Bio:</label>
               <textarea
                 id="bio"
                 name="bio"
                 value={data.bio}
-                readOnly={!isEditing.bio} // Make textarea read-only if not in editing mode
+                readOnly={!isEditing.bio}
                 // onChange={(e) => setBio(e.target.value)}
-              ></textarea>
+                ></textarea>
               <button type="button" onClick={() => handleEdit("bio")}>
                 {isEditing.bio ? "Save" : "Edit"}
               </button>
@@ -183,6 +173,8 @@ const Navbar = () => {
         </div>
       )}
     </nav>
+    {isFindUserModalOpen && (<FindUserModal isOpen={isFindUserModalOpen} onClose={toggleFindUserModal}/>)}
+      </div>
   );
 };
 

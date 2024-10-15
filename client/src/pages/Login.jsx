@@ -1,13 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-import { loginRoute } from "../utils/APIRoute";
-import axios from "axios";
-import { useLoginMutation } from "../auth/authApiSlice";
+import { useLoginMutation } from "../redux/auth/authApiSlice";
 import { useSelector } from "react-redux";
-import { selectCurrentToken } from "../auth/authSlice";
-import { useNavigate } from "react-router-dom";
+import { selectCurrentToken, selectCurrentUser } from "../redux/auth/authSlice";
 import usePersist from "../hooks/usePersist";
-import { useLoginWithGoogleMutation } from "../auth/authApiSlice";
+import { useLoginWithGoogleMutation } from "../redux/auth/authApiSlice";
 import { useGoogleLogin } from "@react-oauth/google";
+import Loader from "../components/Loader";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
@@ -17,6 +16,8 @@ function Login() {
   const token = useSelector(selectCurrentToken);
   const [persist, setPersist] = usePersist();
   const [GoogleOAuthlogin, { isLoadingGoogle }] = useLoginWithGoogleMutation();
+  const [loading, setLoading] = useState(false);
+  const currentUser = useSelector(selectCurrentUser);
   const handleemailChange = (data) => {
     setEmail(data.target.value);
   };
@@ -30,21 +31,35 @@ function Login() {
   };
 
   const handleSubmit = async (data) => {
-    data.preventDefault();
-    const resp = await login({ email, password }).unwrap();
 
-    if (resp.status === true) {
-      localStorage.setItem("persist", "true");
-      navigate("/chat");
-    } else {
+    data.preventDefault();
+    setLoading(true);
+    try{
+
+      const resp = await login({ email, password }).unwrap();
+      
+      if (resp.status === true) {
+        localStorage.setItem("persist", "true");
+        
+      }
+    }catch(err){
+
+    }finally{
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/chat");
+    }
+  }, [currentUser, navigate]);
+
+
+
   const handleGoogleSubmit = async (authResult) => {
-    console.log("in google");
     try {
       if (authResult["code"]) {
-        console.log("Doing....");
         const result = await GoogleOAuthlogin(authResult["code"]).unwrap();
         if (result.status === true) {
             localStorage.setItem("persist", "true");
@@ -61,6 +76,10 @@ function Login() {
     onError: handleGoogleSubmit,
     flow: "auth-code",
   });
+
+  if (loading) {
+    return <Loader />; // Show loader while loading
+  }
 
   return (
     <div className="signupSection">

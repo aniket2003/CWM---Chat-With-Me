@@ -1,0 +1,354 @@
+/* Chat Component */
+.Chat {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    top: 0rem;
+    width: 100%;
+    left: 0%;
+}
+
+.Chat2 {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    margin-top: 80px; /* Matches navbar height */
+    height: calc(100vh - 80px); /* Subtract navbar height */
+    overflow: hidden;
+}
+
+.FriendsContainer {
+    flex: 0.7; /* Adjust the width of the FriendsContainer */
+    border-right: solid 1px rgb(25 69 69 / 48%);
+    height: 100%;
+    max-width: 25rem;
+    overflow-y: auto;
+    
+}
+
+
+.ChatContainer {
+    flex: 1.7; /* Takes the remaining space */
+    /* border: solid 1px rgb(20 40 40); */
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    background-color: black;
+}
+
+.EmptyChatContainer {
+    flex: 1.7; /* Takes the remaining space */
+    /* border: solid 1px rgb(20 40 40); */
+    height: 100%;
+    overflow-y: auto;
+    display: grid;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .Chat2 {
+        flex-direction: column;
+    }
+
+    .FriendsContainer, .ChatContainer {
+        flex: 1;
+        max-width: 100%;
+    }
+
+}
+
+.EmptyChatspan1{
+        font-family: system-ui;
+        color: green;
+}
+
+
+.ChatHeader{
+    border-bottom: solid 1px rgb(25 69 69 / 48%);
+    border-top: solid 1px rgb(25 69 69 / 48%);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 95%;
+    padding-right: 2rem;
+    padding-left: 2rem;
+}
+
+
+.MessageBar{
+
+    border: solid 2px rgb(25 69 69 / 75%);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 5px;
+    height: 4rem;
+    border-radius: 33px;
+
+    input[type="file"]{
+       border-radius: 2rem;
+       width: 4rem;
+    }
+
+    input[type="text"]{
+        width: 40rem;
+        border: none;
+        height: 3rem;
+        background-color: black;
+    }
+
+}
+
+.MessageBarParent{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 48%;
+    border-radius: 33px;
+    background-color: black;
+    height: 4rem;
+}
+
+.MessageContainer{
+    height: 48rem;
+    width: 100%;
+    background-color: rgb(0, 0, 0);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+.MessageContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.MessageContainer::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 8px;
+}
+
+.MessageContainer::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 8px;
+}
+
+.MessageContainer::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* .MessageContainer {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #e0e0e0;
+} */
+
+.custom-file-upload {
+    cursor: pointer;
+    display: inline-block;
+    height: 40%;
+  }
+  
+.custom-file-upload img {
+    width: 24px; /* Adjust size as needed */
+    height: 24px;
+}
+
+.MessageBarButton{
+    padding: 0.75rem;
+    border: none;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1rem;
+    border-radius: 5px;
+  }
+
+
+  .MessageBarcustom-input {
+    border: 1px solid gray;
+    font-size: 20px;
+  }
+  
+  .MessageBarcustom-input:focus {
+    outline: none;
+    border-color: gray;
+  }
+
+  .MessageBarcustom-input::placeholder {
+    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+  }
+
+
+  .ChatHeaderProfilePic{
+    cursor: pointer;
+  }
+
+  .ChatHeaderLeft{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .ChatHeaderRight{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+
+
+  .FriendDetailModalParent{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .FriendDetailModalChild{
+    width: 25rem;
+  }
+
+  .FriendDetailModalprofile-pic{
+    width: 25%; 
+    height: 25%; 
+    border-radius: 50%; 
+    object-fit: cover;
+  }
+
+
+
+  .goBackLabel{
+    width: 15%;
+    display: flex;
+    height: 2rem;
+    cursor: pointer;
+  }
+
+  .goBackIcon{
+    width: 100%;
+  }
+
+  .UnFriendButton:focus {
+    outline: none;
+    border-color: gray;
+  }
+
+
+
+.dateDivider{
+  text-align: center;
+  font-size: 14px;
+  color: grey;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+
+.sentMessage, .receivedMessage{
+  margin-bottom: 7px;
+  margin-top: 0px;
+}
+
+
+
+  
+.sendMessageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  align-self: flex-end;
+  background-color: #dcf8c6;
+  min-width: 15%;
+  max-width: 75%;
+  border-radius: 20px 20px 0 20px;
+  color: black;
+  padding: 10px 15px;
+  margin: 5px;
+  word-break: break-word;
+  font-size: 16px;
+  display: inline-block;
+  white-space: pre-wrap;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow-wrap: break-word;
+}
+
+.receivedMessageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: flex-start;
+  background-color: #f8f8f8;
+  min-width: 15%;
+  max-width: 75%;
+  border-radius: 20px 20px 20px 0;
+  color: black;
+  padding: 10px 15px;
+  margin: 5px;
+  word-break: break-word;
+  font-size: 16px;
+  display: inline-block;
+  white-space: pre-wrap;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow-wrap: break-word;
+}
+
+.sendMessageContainer .timestamp, .receivedMessageContainer .timestamp {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+}
+
+
+@media screen and (max-width: 768px) {
+  .sentMessageContainer,
+  .receivedMessageContainer {
+    max-width: 80%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sentMessageContainer,
+  .receivedMessageContainer {
+    max-width: 90%;
+    font-size: 14px;
+  }
+}
+
+
+
+.UnFriendModalBtn{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+
+
+
+/* ------------------------------------------------------------------ */
+/* {Friends Container} */
+
+
+
+
+/* ------------------------------------------------------------------ */
+/* {Chat Container} */
+
+
+/* ------------------------------------------------------------------ */
+/* {EmptyChat Container} */
+
+
+

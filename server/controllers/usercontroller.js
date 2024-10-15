@@ -1,8 +1,11 @@
 const User = require("../models/User");
+const Conversations = require("../models/Conversations");
+const Messages = require("../models/Messages");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const { oauth2client } = require("../utils/googleConfig");
+const Friends = require("../models/Friends");
 const cloudinary = require("cloudinary").v2;
 const cloud_name = process.env.cloud_name;
 const cloudinary_api_key = process.env.cloudinary_api_key;
@@ -44,9 +47,9 @@ const register = async (req, res, next) => {
     const { username, password, email, bio, profilepic } = req.body;
 
     const usernameCheck = await User.findOne({ username });
-    // if (usernameCheck) {
-    //   return res.json({ msg: "Username already used", status: false });
-    // }
+    if (usernameCheck) {
+      return res.json({ msg: "Username already used", status: false });
+    }
 
     const emailCheck = await User.findOne({ email });
     if (emailCheck) {
@@ -100,9 +103,7 @@ const GoogleOAuth = async (req, res, next) => {
 
   try {
     const { code } = req.query;
-    console.log("Code: ", code);
     const { tokens } = await oauth2client.getToken(code);
-    console.log("Getting!!!!!!");
     oauth2client.setCredentials(tokens);
 
     const userRes = await axios.get(
@@ -155,7 +156,7 @@ const GoogleOAuth = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password, tmp } = req.body;
+    const { email, password } = req.body;
     const emailCheck = await User.findOne({ email });
     if (!emailCheck) {
       return res.json({ msg: "Incorrect username or password", status: false });
@@ -223,7 +224,7 @@ const refresh = (req, res) => {
       expiresIn: ACCESS_TO,
     });
 
-    res.json({ accessToken });
+    res.json({ authtoken: accessToken });
   });
 };
 
@@ -238,4 +239,169 @@ const fetchuser = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, fetchuser, logout, refresh, GoogleOAuth };
+
+const FindUsers = async(req,res)=>{
+  try{
+    const searchTerm = req.body.searchTerm;
+    console.log("Finding Userssss--------------------------------------------------------------------", searchTerm);
+    const users = await User.find({
+      // $text: { $search: searchTerm }
+      "username": {$regex: ".*"+searchTerm+".*" , $options: "i"} // here the regex will get all the usernames having searchTerm as their substring, "i" will make it case - insensitive ie lowercase uppercase is ignored!!! 
+    }).skip(0).limit(5);
+    // .select("username email ProfilePic");
+    res.send(users);
+  }catch(err){
+    console.log("Error finding the users: ");
+  }
+}
+
+
+
+const AddFriend = async(req,res)=>{
+  try{
+
+    const {userid, friendid} = req.body;
+    const user1 = await User.findById(userid).select('username email ProfilePic bio');
+    const user2 = await User.findById(friendid).select('username email ProfilePic bio');
+
+
+    if(!user2){
+      res.send({status: false});
+    }
+
+    let userFriends1 = await Friends.findOne({user: userid});
+    let userFriends2 = await Friends.findOne({user: friendid});
+
+    if(!userFriends1){
+      userFriends1 = await Friends.create({user: userid, friends:[]});
+    }
+
+    if(!userFriends2){
+      userFriends2 = await Friends.create({user: friendid, friends:[]});
+    }
+
+    const isAlreadyFriend = userFriends1.friends.some(friends=>friends.friendsId.equals(friendid));
+
+    console.log(user1, "     ", user2);
+
+    if(!isAlreadyFriend){
+      userFriends1.friends.push({
+        friendsId: user2._id,
+        username: user2.username,
+        email: user2.email,
+        ProfilePic: user2.ProfilePic,
+        bio: user2.bio,
+      });
+      await userFriends1.save();
+
+      userFriends2.friends.push({
+        friendsId: user1._id,
+        username: user1.username,
+        email: user1.email,
+        ProfilePic: user1.ProfilePic,
+        bio: user1.bio,
+      });
+      await userFriends2.save();
+    }else{
+      console.log("Already a friend");
+    }
+
+    res.send({status: true});
+
+
+  }catch(err){
+    console.error("Error: ", err);
+  }
+}
+
+
+const DeleteFriends = async(req, res)=>{
+  try{
+
+    const {userid, friendid} = req.body;
+    console.log(userid, " ", friendid);
+
+    await Friends.updateOne(
+      {user: userid},
+      {$pull: {friends: {friendsId: friendid}}}
+    );
+
+    await Friends.updateOne(
+      {user: friendid},
+      {$pull: {friends: {friendsId: userid}}}
+    );
+
+    const conversation = await Conversations.findOne({
+      participants: {$all: [userid, friendid]}
+    });
+
+    if(conversation){
+      console.log("Deleting");
+      await Messages.deleteMany({_id: {$in: conversation.messages}});
+      await Conversations.deleteOne({_id: conversation._id});
+    }
+
+    res.send({status: true});
+
+
+  }catch(err){
+    console.log("Error: ", err);
+    res.send({status: false});
+  }
+}
+
+
+const GetFriends = async(req, res)=>{
+
+  try{
+    const UserId = req.userid; 
+    const friends = await Friends.findOne({user: UserId});
+
+    if(friends){
+
+      const formatData = friends.friends.map(friend=>({
+        _id: friend.friendsId,
+        username: friend.username,
+        email: friend.email,
+        ProfilePic: friend.ProfilePic,
+        bio: friend.bio
+      }));
+
+      res.send(formatData);
+    }else{
+      res.send([]);
+    }
+
+  }catch(err){
+    console.error("Error: ", err);
+  }
+
+}
+
+
+
+const IsAFriend = async(req, res)=>{
+  try{
+    const {userid, friendid} = req.body;
+    console.log("IDs: ", userid, "   ", friendid);
+    const user = await Friends.findOne({
+      user: userid,
+      friends:{
+        $elemMatch : {friendsId : friendid}
+      }
+    });
+
+    if(user){
+      res.send({status: true});
+    }else{
+      res.send({status: false});
+    }
+
+  }catch(err){
+    console.error("Error: ", err);
+  }
+}
+
+
+
+module.exports = { register, login, fetchuser, logout, refresh, GoogleOAuth, FindUsers, AddFriend, GetFriends, IsAFriend, DeleteFriends };

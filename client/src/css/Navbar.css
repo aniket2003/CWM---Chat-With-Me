@@ -63,6 +63,11 @@
     justify-content: center;
     padding: 5px;
   }
+
+  .dropdown-btn:focus {
+    outline: none;
+    border-radius: rgb(102, 100, 100);
+  }
   
   .hamburger {
     display: flex;
@@ -199,11 +204,11 @@
     position: absolute;
     top: 16px;
     right: 20px;
-    height: 3%;
-    width: 8%;
+    height: 2rem;
+    width: 2rem;
     cursor: pointer;
     border-radius: 72%;
-    background-color: rgba(20, 40, 40, .8);
+    background-color: rgba(28, 48, 48, 0.808);
     font-size: 24px;
     padding-bottom: 4px;
     color: white;
@@ -214,24 +219,28 @@
   
   .close-btn:hover {
     background-color: #159b58;
+    color: aliceblue;
   }
   
-  form {
+  .NavbarForm {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
   
-  form input, form textarea {
+  .NavbarForm input, .NavbarForm textarea {
     padding: 0.75rem;
-    border: 3px solid #6f4a15;
+    border: 3px solid rgb(50, 68, 68);
     border-radius: 5px;
     font-size: 1rem;
     color: white;
     background-color: unset
   }
+  .NavbarForm input, .NavbarForm textarea:focus {
+    outline: none;
+  }
   
-  form button {
+  .NavbarForm button {
     padding: 0.75rem;
     border: none;
     background-color: rgba(20, 40, 40, .8);
@@ -242,7 +251,7 @@
     border-radius: 5px;
   }
   
-  form button:hover {
+  .NavbarForm button:hover {
     background-color: #159b58;
   }
   
@@ -309,7 +318,7 @@
   }
 }
   
-  input[type="file"] {
+.Navbar_FileInput{
     display: block;
     margin-top: 10px;
     width: 94%;
@@ -326,3 +335,253 @@
   #username, #email{
     width: 70%;
   }
+
+
+
+
+  .FindUserModal{
+    background-color: #159b58;
+  }
+
+  /* Navbar.css */
+
+/* Modal overlay that covers the entire screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Dark transparent background */
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  z-index: 1000;
+  transition: opacity 0.3s ease; /* Smooth fade-in effect */
+  overflow: hidden; /* Prevent scrolling when modal is open */
+}
+
+/* Modal content styling */
+.modal-content {
+  background: rgba(20, 40, 40);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+  width: 90%; /* 90% of screen width on smaller screens */
+  max-width: 500px; /* Max width for larger screens */
+  animation: modal-appear 0.3s ease; /* Smooth modal pop-up */
+  position: relative;
+}
+
+/* Close button */
+.modal-content .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Smooth fade-in animation */
+@keyframes modal-appear {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 1.5rem; /* Slightly smaller padding on mobile */
+    width: 95%; /* Almost full width on mobile */
+  }
+
+  .modal-content .close-btn {
+    top: 8px;
+    right: 10px;
+    font-size: 1.25rem;
+  }
+}
+
+/* Button styling inside the modal */
+.modal-content button {
+  background-color: rgba(28, 48, 48, 0.808);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+.modal-content button:hover {
+  background-color: #159b58;
+}
+
+.FoundedUsers{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+.FoundedUserListCard{
+    cursor: pointer;
+    border: solid 1px black;
+    height: 10%;
+    color:white;
+    background-color: rgb(20, 40, 40);
+    display: flex;
+    border-radius: 1rem;
+}
+
+.FoundedUserListCard:hover{
+  background-color: rgba(0, 0, 0, 0.39);
+  border: solid 1px rgb(56, 56, 56);
+  color: aliceblue;
+}
+
+.FoundedUserListCard:focus {
+  outline: none;
+  border-radius: gray;
+}
+
+
+.FoundedUserProfilePic{
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    border: 2px solid rgba(20, 40, 40, .8);
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.FoundedUserUsernameEmail{
+      width: 65%;
+}
+
+
+.FindUserSearchUser{ 
+  width: 95%;
+  padding: 10px;
+  margin-bottom: 15px; 
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border:solid 1px #333;
+  border-radius: 1rem;
+}
+
+.FindUserSearchUser:focus {
+  outline: none;
+  border-radius: rgb(102, 100, 100);
+}
+
+.FindUserSearchUser::placeholder {
+  font-size: 20px;
+  font-family: 'Courier New', Courier, monospace;
+  text-align: center;
+}
+
+.UserCardmodal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); 
+  /* Dark transparent background */
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  z-index: 1000;
+  transition: opacity 0.3s ease; 
+  /* Smooth fade-in effect */
+  overflow: hidden; /* Prevent scrolling when modal is open */
+}
+
+/* Modal content styling */
+.UserCardmodal-content {
+  background: rgba(20, 40, 40);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+   /* Subtle shadow for depth */
+  width: 90%; /* 90% of screen width on smaller screens */
+  max-width: 500px; /* Max width for larger screens */
+  animation: modal-appear 0.3s ease; /* Smooth modal pop-up */
+  position: relative;
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .UserCardmodal-content {
+    padding: 1.5rem; /* Slightly smaller padding on mobile */
+    width: 95%; /* Almost full width on mobile */
+  }
+
+  .UserCardmodal-content .close-btn {
+    top: 8px;
+    right: 10px;
+    font-size: 1.25rem;
+  }
+}
+
+/* Button styling inside the modal */
+.UserCardmodal-content button {
+  background-color: rgba(28, 48, 48, 0.808);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+.UserCardmodal-content button:hover {
+  background-color: #159b58;
+}
+
+
+.UserCardprofile-pic{
+  border-radius: 50%;
+  object-fit: cover;
+  width: 25%;
+  height: 25%;
+}
+
+.UserCardParent{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.UserCardChild{
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  h2{
+    margin: 4%;
+  }
+  p{
+    margin:3%;
+  }
+}

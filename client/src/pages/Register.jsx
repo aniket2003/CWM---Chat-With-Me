@@ -3,7 +3,7 @@ import { registerRoute } from "../utils/APIRoute";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import usePersist from "../hooks/usePersist";
-import { useLoginWithGoogleMutation } from "../auth/authApiSlice";
+import { useLoginWithGoogleMutation } from "../redux/auth/authApiSlice";
 import { useGoogleLogin } from "@react-oauth/google";
 
 function Register() {

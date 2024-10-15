@@ -1,55 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { useGetUserMutation, useSendLogoutMutation } from '../auth/authApiSlice'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import "../css/Chat.css";
 import Navbar from '../components/Navbar';
+import ChatContainer from '../components/ChatContainer';
+import FriendsContainer from '../components/FriendsContainer';
+import { useSelector } from 'react-redux';
+import { selectCurrentSelectedUser } from '../redux/selecteduser/selecteduserSlice';
+import EmptyChatContainer from '../components/EmptyChatContainer';
 
 function Chat() {
-    const navigate = useNavigate();
-    const [getuser, {isLoading}] = useGetUserMutation();
-    const [logout, {isLoadinglogout}] = useSendLogoutMutation();
-    const [data, setData] = useState('');
-
-
-    const handlegetdetails = async()=>{
-      const data = await getuser().unwrap()
-      console.log(data)
-      setData(data);
-    }
-
-    const handlelogout = async()=>{
-      const data = await logout().unwrap()
-      navigate("/login");
-      console.log(data);
-    }
-
-    
-
+  const isUserSelected = useSelector(selectCurrentSelectedUser);
   return (
-    <div className="container">
+    <div className="Chat">
       <Navbar/>
-      <div className="login">
-
-        <div>Chat</div>
-        <div className="div">
-            <h1>
-              email: {data.username}
-              profilepic:
-              <img
-            src={data.ProfilePic}
-            alt="Uploaded Profile"
-            style={{
-              width: "150px",
-              height: "150px",
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-            />
-            </h1>
-            <button onClick={()=>handlegetdetails()}>getDetails</button>
-            <button onClick={()=>handlelogout()}>logout</button>
-        </div>
-
-            </div>
+      <div className='Chat2'>
+        <FriendsContainer/>
+        {isUserSelected ?  <ChatContainer/> : <EmptyChatContainer/>}
+      </div>
     </div>
   )
 }

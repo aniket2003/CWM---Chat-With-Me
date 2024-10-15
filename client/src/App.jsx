@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
 import Landing from "./pages/Landing";
@@ -6,8 +5,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Chat from "./pages/Chat";
 import PageNotFound from "./pages/PageNotFound";
-import PersistLogin from "./auth/PersistLogin";
+import PersistLogin from "./redux/auth/PersistLogin";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { SocketProvider } from "./context/SocketContext";
 const client_id = '97244884093-a86phhes9003egmbrlc8b3acr3iogqrj.apps.googleusercontent.com';
 function App() {
 
@@ -42,7 +42,7 @@ function App() {
     },
     {
       path: "/",
-      element: <PersistLogin />, // Use PersistLogin to wrap protected routes
+      element: <PersistLogin />, // Using PersistLogin to wrap protected routes
       children: [
         {
           path: "chat",
@@ -57,11 +57,19 @@ function App() {
     },
   ]);
 
+  // if(currentUser === null && (location.pathname === '/chat')){
+  //   console.log(currentUser);
+  //   return <Loader/>
+  // }
+
   return (
     <>
+    <SocketProvider>
       <RouterProvider router={router} />
+    </SocketProvider>
     </>
   );
 }
 
 export default App;
+
