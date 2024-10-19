@@ -1,4 +1,4 @@
-const { sendMessage, SocketAddFriend, SocketDeleteFriend } = require("./controllers/messagecontroller");
+const { sendMessage, SocketAddFriend, SocketDeleteFriend, SendFile } = require("./controllers/messagecontroller");
 const { Server: SocketIoServer } = require("socket.io");
 
 const setSocket = (server) => {
@@ -35,8 +35,8 @@ const setSocket = (server) => {
     } else {
       console.log("User ID not provided during connection.");
     }
-
-    socket.on("message", (data)=> sendMessage(io, userSocketMap, data));
+    socket.on("send-message", (data)=> sendMessage(io, userSocketMap, data))
+    socket.on("send-file", (data)=> SendFile(io, userSocketMap, data));
     socket.on("AddFriend", (data)=>SocketAddFriend(io, userSocketMap, data));
     socket.on("DeleteFriend", (data)=>SocketDeleteFriend(io, userSocketMap, data));
     socket.on("disconnect", () => disconnect(socket));

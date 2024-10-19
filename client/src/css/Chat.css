@@ -142,10 +142,84 @@
   background: #555;
 }
 
-/* .MessageContainer {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #e0e0e0;
-} */
+
+.message-image-preview {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  margin: 5px 0;
+}
+
+
+.download-button {
+  background-color: #25d366; 
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 5px 0;
+}
+
+.download-button:hover {
+  background-color: #128c7e;
+}
+
+
+@media (max-width: 600px) {
+  .sentMessage, .receivedMessage {
+    max-width: 90%;
+  }
+
+  .image-preview {
+    max-height: 150px;
+  }
+
+  .download-button {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}
+
+
+
+.loader-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.progress {
+  width: 100%;
+  background-color: #f3f3f3;
+  border-radius: 4px;
+  margin-left: 10px;
+  position: relative;
+  height: 6px;
+}
+
+.progress-bar {
+  height: 6px;
+  width: 0;
+  background-color: #25d366;
+  animation: loading 2s linear infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    width: 0;
+  }
+  50% {
+    width: 50%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+
 
 .custom-file-upload {
     cursor: pointer;
@@ -154,7 +228,7 @@
   }
   
 .custom-file-upload img {
-    width: 24px; /* Adjust size as needed */
+    width: 24px; 
     height: 24px;
 }
 
@@ -184,6 +258,62 @@
     font-size: 20px;
     font-family: 'Courier New', Courier, monospace;
     text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .MessageBar {
+      max-width: 100%;
+      padding: 8px;
+    }
+  
+    .MessageBarcustom-input {
+      font-size: 14px;
+      padding: 8px;
+    }
+  
+    .MessageBar img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .file-info{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 85%;
+  }
+
+  .fileDetails{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    /* width: 50%; */
+  }
+
+  .file-name{
+    font-size: 16px;
+    color: white;
+  }
+
+  .file-size{
+    font-size: 12px;
+    color: #a0a0a0;
+    margin-top: 2px;
+  }
+
+  .cancel-button{
+    background-color: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  .cancel-button:hover{
+    text-decoration: underline;
   }
 
 

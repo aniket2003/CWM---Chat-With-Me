@@ -434,15 +434,25 @@
   gap: 1rem;
 }
 
+.unread-count{
+  align-content: center;
+  border: solid 1px darkolivegreen;
+  border-radius: 50px;
+  background-color: darkolivegreen;
+  height: 5%;
+  width: 6%;
+}
+
 
 .FoundedUserListCard{
-    cursor: pointer;
-    border: solid 1px black;
-    height: 10%;
-    color:white;
-    background-color: rgb(20, 40, 40);
-    display: flex;
-    border-radius: 1rem;
+  cursor: pointer;
+  border: solid 1px black;
+  height: 10%;
+  color: white;
+  background-color: rgb(20, 40, 40);
+  display: flex;
+  border-radius: 1rem;
+  align-items: center;
 }
 
 .FoundedUserListCard:hover{

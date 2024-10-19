@@ -8,7 +8,7 @@ import { selectCurrentUser } from "../redux/auth/authSlice";
 import { selectCurrentSelectedUser } from "../redux/selecteduser/selecteduserSlice";
 import { getMessages, setMessages } from "../redux/messages/messagesSlice";
 import { format } from "date-fns";
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 function MessageContainer() {
   const [conversation, { loadingConversations }] = useGetMessagesMutation();
@@ -16,10 +16,10 @@ function MessageContainer() {
   const from = useSelector(selectCurrentUser)._id;
   const selectedUser = useSelector(selectCurrentSelectedUser);
   const to = selectedUser._id;
-  
-  const dispatch = useDispatch();
   const [result, setResult] = useState([]);
   const messagesEndRef = useRef(null);
+
+  
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -32,15 +32,14 @@ function MessageContainer() {
   };
 
   useEffect(() => {
-    if(!to)return;
+    if (!to) return;
     const fetch = async () => {
       setLoading(true);
       try {
         const response = await conversation({ from, to }).unwrap();
-        console.log(response)
-        if(response?.conversations?.messages){
+        console.log(response);
+        if (response?.conversations?.messages) {
           setResult(response.conversations.messages);
-        //   dispatch(setMessages(response.conversations));
         }
         setLoading(false);
       } catch (err) {
@@ -50,35 +49,60 @@ function MessageContainer() {
     fetch();
   }, [to, from, conversation]);
 
-  if(!to){
-    return <Loader/>
+  if (!to) {
+    return <Loader />;
   }
 
-  const {socket}= useSocket();
+  const { socket } = useSocket();
 
   useEffect(() => {
     if (socket?.current) {
       socket.current.on("receiveMessage", (data) => {
         setResult((prev) => [...prev, data]);
       });
-
       return () => {
         socket.current.off("receiveMessage");
       };
     }
   }, [socket]);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behaviour: "smooth" });
+  };
 
-
-  const scrollToBottom = ()=>{
-    messagesEndRef.current?.scrollIntoView({behaviour: "smooth"});
-  }
-
-  useEffect(()=>{
+  useEffect(() => {
     scrollToBottom();
-  },[result])
+  }, [result]);
 
   let previousDate = null;
+
+  const renderMessageContent = (message) => {
+    if (message.messageType === "file") {
+      const isImage = message.fileUrl.match(/\.(jpeg|jpg|gif|png)$/);
+
+      if (isImage) {
+        return (
+          <div>
+            <img
+              src={message.fileUrl}
+              alt="media file"
+              className="message-image-preview"
+              style={{ maxWidth: "100%", maxHeight: "200px" }}
+            />
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            <a href={message.fileUrl} download />
+            <button className="download-button">Download File</button>
+          </div>
+        );
+      }
+    } else {
+      return <p>{message.content}</p>;
+    }
+  };
 
   return (
     <div className="MessageContainer">
@@ -90,36 +114,36 @@ function MessageContainer() {
             const showDate = previousDate !== currentMessageDate;
 
             if (showDate) {
-              previousDate = (currentMessageDate);
+              previousDate = currentMessageDate;
             }
 
             return (
+              <Fragment key={uuidv4()}>
+                {showDate && (
+                  <p className="dateDivider">{formatDate(message.timestamp)}</p>
+                )}
 
-
-              <Fragment  key={uuidv4()}>
-              
-              {showDate && <p className="dateDivider">{formatDate(message.timestamp)}</p>}
-              
-              
-              {message.from === from ? (
-                <div className="sendMessageContainer">
-                <p className="sentMessage">
-                {message.content}
-              </p>
-                <span className="timestamp">{formatTime(message.timestamp)}</span>
-                </div>
-            ) : (
-              <div className="receivedMessageContainer">
-              <p className="receivedMessage">
-                {message.content}
-              </p>
-                <span className="timestamp">{formatTime(message.timestamp)}</span>
-              </div>
-            )}
-            
-            </Fragment>
-
-          );
+                {message.from === from ? (
+                  <div className="sendMessageContainer">
+                    <div className="sentMessage">
+                      {renderMessageContent(message)}
+                    </div>
+                    <span className="timestamp">
+                      {formatTime(message.timestamp)}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="receivedMessageContainer">
+                    <div className="receivedMessage">
+                      {renderMessageContent(message)}
+                    </div>
+                    <span className="timestamp">
+                      {formatTime(message.timestamp)}
+                    </span>
+                  </div>
+                )}
+              </Fragment>
+            );
           })
         : null}
 

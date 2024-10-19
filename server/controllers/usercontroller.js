@@ -1,11 +1,12 @@
 const User = require("../models/User");
 const Conversations = require("../models/Conversations");
 const Messages = require("../models/Messages");
+const Friends = require("../models/Friends");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const { oauth2client } = require("../utils/googleConfig");
-const Friends = require("../models/Friends");
+const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const cloud_name = process.env.cloud_name;
 const cloudinary_api_key = process.env.cloudinary_api_key;
@@ -15,6 +16,11 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TO = process.env.ACCESS_TO;
 const REFRESH_TO = process.env.REFRESH_TO;
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage }).single("file");
+const path = require("path");
+const DatauriParser = require("datauri/parser");
 
 cloudinary.config({
   cloud_name: cloud_name,
@@ -39,6 +45,29 @@ const UploadImage = async (profilepic) => {
     return result.secure_url;
   } catch (error) {
     console.error("Error uploading image:", error);
+  }
+};
+
+const SendFile = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).send({ status: false, message: "No file uploaded." });
+  }
+
+  const parser = new DatauriParser();
+  const file = parser.format(
+    path.extname(req.file.originalname).toString(),
+    req.file.buffer
+  );
+
+  try {
+    const result = await cloudinary.uploader.upload(file.content, {
+      folder: "CWM/UserUploads",
+    });
+    // res.send({status : true});
+    res.send({ status: true, url: result.secure_url });
+  } catch (err) {
+
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
 
@@ -239,52 +268,52 @@ const fetchuser = async (req, res, next) => {
   }
 };
 
-
-const FindUsers = async(req,res)=>{
-  try{
+const FindUsers = async (req, res) => {
+  try {
     const searchTerm = req.body.searchTerm;
-    console.log("Finding Userssss--------------------------------------------------------------------", searchTerm);
     const users = await User.find({
-      // $text: { $search: searchTerm }
-      "username": {$regex: ".*"+searchTerm+".*" , $options: "i"} // here the regex will get all the usernames having searchTerm as their substring, "i" will make it case - insensitive ie lowercase uppercase is ignored!!! 
-    }).skip(0).limit(5);
-    // .select("username email ProfilePic");
+      username: { $regex: ".*" + searchTerm + ".*", $options: "i" }, // here the regex will get all the usernames having searchTerm as their substring, "i" will make it case - insensitive ie lowercase uppercase is ignored!!!
+    })
+      .skip(0)
+      .limit(5);
     res.send(users);
-  }catch(err){
+  } catch (err) {
     console.log("Error finding the users: ");
   }
-}
+};
 
+const AddFriend = async (req, res) => {
+  try {
+    const { userid, friendid } = req.body;
+    const user1 = await User.findById(userid).select(
+      "username email ProfilePic bio"
+    );
+    const user2 = await User.findById(friendid).select(
+      "username email ProfilePic bio"
+    );
 
-
-const AddFriend = async(req,res)=>{
-  try{
-
-    const {userid, friendid} = req.body;
-    const user1 = await User.findById(userid).select('username email ProfilePic bio');
-    const user2 = await User.findById(friendid).select('username email ProfilePic bio');
-
-
-    if(!user2){
-      res.send({status: false});
+    if (!user2) {
+      res.send({ status: false });
     }
 
-    let userFriends1 = await Friends.findOne({user: userid});
-    let userFriends2 = await Friends.findOne({user: friendid});
+    let userFriends1 = await Friends.findOne({ user: userid });
+    let userFriends2 = await Friends.findOne({ user: friendid });
 
-    if(!userFriends1){
-      userFriends1 = await Friends.create({user: userid, friends:[]});
+    if (!userFriends1) {
+      userFriends1 = await Friends.create({ user: userid, friends: [] });
     }
 
-    if(!userFriends2){
-      userFriends2 = await Friends.create({user: friendid, friends:[]});
+    if (!userFriends2) {
+      userFriends2 = await Friends.create({ user: friendid, friends: [] });
     }
 
-    const isAlreadyFriend = userFriends1.friends.some(friends=>friends.friendsId.equals(friendid));
+    const isAlreadyFriend = userFriends1.friends.some((friends) =>
+      friends.friendsId.equals(friendid)
+    );
 
     console.log(user1, "     ", user2);
 
-    if(!isAlreadyFriend){
+    if (!isAlreadyFriend) {
       userFriends1.friends.push({
         friendsId: user2._id,
         username: user2.username,
@@ -302,106 +331,177 @@ const AddFriend = async(req,res)=>{
         bio: user1.bio,
       });
       await userFriends2.save();
-    }else{
+    } else {
       console.log("Already a friend");
     }
 
-    res.send({status: true});
-
-
-  }catch(err){
+    res.send({ status: true });
+  } catch (err) {
     console.error("Error: ", err);
   }
-}
+};
 
-
-const DeleteFriends = async(req, res)=>{
-  try{
-
-    const {userid, friendid} = req.body;
+const DeleteFriends = async (req, res) => {
+  try {
+    const { userid, friendid } = req.body;
     console.log(userid, " ", friendid);
 
     await Friends.updateOne(
-      {user: userid},
-      {$pull: {friends: {friendsId: friendid}}}
+      { user: userid },
+      { $pull: { friends: { friendsId: friendid } } }
     );
 
     await Friends.updateOne(
-      {user: friendid},
-      {$pull: {friends: {friendsId: userid}}}
+      { user: friendid },
+      { $pull: { friends: { friendsId: userid } } }
     );
 
     const conversation = await Conversations.findOne({
-      participants: {$all: [userid, friendid]}
+      participants: { $all: [userid, friendid] },
     });
 
-    if(conversation){
+    if (conversation) {
       console.log("Deleting");
-      await Messages.deleteMany({_id: {$in: conversation.messages}});
-      await Conversations.deleteOne({_id: conversation._id});
+      await Messages.deleteMany({ _id: { $in: conversation.messages } });
+      await Conversations.deleteOne({ _id: conversation._id });
     }
 
-    res.send({status: true});
-
-
-  }catch(err){
+    res.send({ status: true });
+  } catch (err) {
     console.log("Error: ", err);
-    res.send({status: false});
+    res.send({ status: false });
   }
-}
+};
+
+const GetFriends = async (req, res) => {
+  try {
+    const UserId = req.userid;
+    const friends = await Friends.findOne({ user: UserId });
+
+    if (friends) {
+      const formatData = await Promise.all(
+        
+        friends.friends.map(async(friend) => {
+
+          const unreadMessages = await Messages.countDocuments({
+            from: friend.friendsId,
+            to: UserId,
+            read: false,
+          });
+
+          return {
+            _id: friend.friendsId,
+            username: friend.username,
+            email: friend.email,
+            ProfilePic: friend.ProfilePic,
+            bio: friend.bio,
+            NumberofUnReadMessages: unreadMessages,
+          };
+        })
 
 
-const GetFriends = async(req, res)=>{
+      );
 
-  try{
-    const UserId = req.userid; 
-    const friends = await Friends.findOne({user: UserId});
 
-    if(friends){
 
-      const formatData = friends.friends.map(friend=>({
-        _id: friend.friendsId,
-        username: friend.username,
-        email: friend.email,
-        ProfilePic: friend.ProfilePic,
-        bio: friend.bio
-      }));
-
-      res.send(formatData);
-    }else{
-      res.send([]);
+      res.status(200).send(formatData);
+    } else {
+      res.status(200).send([]);
     }
-
-  }catch(err){
+  } catch (err) {
     console.error("Error: ", err);
   }
+};
 
-}
-
-
-
-const IsAFriend = async(req, res)=>{
-  try{
-    const {userid, friendid} = req.body;
+const IsAFriend = async (req, res) => {
+  try {
+    const { userid, friendid } = req.body;
     console.log("IDs: ", userid, "   ", friendid);
     const user = await Friends.findOne({
       user: userid,
-      friends:{
-        $elemMatch : {friendsId : friendid}
-      }
+      friends: {
+        $elemMatch: { friendsId: friendid },
+      },
     });
 
-    if(user){
-      res.send({status: true});
-    }else{
-      res.send({status: false});
+    if (user) {
+      res.send({ status: true });
+    } else {
+      res.send({ status: false });
     }
-
-  }catch(err){
+  } catch (err) {
     console.error("Error: ", err);
   }
+};
+
+
+const Message = async(req,res)=>{
+  const {from, to, message} = req.body;
+
+  try{
+
+    let conversation = await Conversations.findOne({
+      participants: {$all : [from , to]},
+    });
+
+    if(!conversation){
+      conversation = await Conversations.create({
+        participants : [from, to],
+      })
+    }
+    
+    const Message = await Messages.create({
+      from : from,
+      to : to,
+      messageType : "text",
+      content: message,
+  });
+  
+  if(Message){
+    conversation.messages.push(Message._id);
+    await conversation.save();
+  }
+
+  res.status(200).send({status: true});
+
+}catch(err){
+  res.status(500).send({status: false});
+  console.log(err);
+}
+};
+
+const ReadAllMessages = async(req,res)=>{
+
+  try{
+
+    const {from , to} = req.body;
+    
+    await Messages.updateMany(
+      {from , to , read: false},
+      {$set: {read: true}}
+    );
+    res.status(200).send({status: true});
+
+  }catch(err){
+    res.status(500).send({status: false, message: err});
+  }
+
 }
 
 
-
-module.exports = { register, login, fetchuser, logout, refresh, GoogleOAuth, FindUsers, AddFriend, GetFriends, IsAFriend, DeleteFriends };
+module.exports = {
+  register,
+  login,
+  fetchuser,
+  logout,
+  refresh,
+  GoogleOAuth,
+  FindUsers,
+  AddFriend,
+  GetFriends,
+  IsAFriend,
+  DeleteFriends,
+  SendFile,
+  Message,
+  ReadAllMessages,
+};

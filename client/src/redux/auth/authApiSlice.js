@@ -93,6 +93,52 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
     // -------------------------------------------------
 
+    ReadAllMessages: builder.mutation({
+      query: (data) => ({
+        url: "api/auth/ReadAllMessages",
+        method: "POST",
+        body: { ...data },
+      }),
+    }),
+
+    // -------------------------------------------------
+
+    SendFile: builder.mutation({
+      query: (formData) => ({
+        url: "api/auth/SendFile",
+        method: "POST",
+        body: formData,
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const data = await queryFulfilled;
+          console.log(data);
+        } catch (err) {
+          console.log("Error: ", err);
+        }
+      },
+    }),
+
+    // -------------------------------------------------
+
+    Message: builder.mutation({
+      query: (data) => ({
+        url: "api/auth/Message",
+        method: "POST",
+        body: { ...data },
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const data = await queryFulfilled;
+          console.log(data);
+        } catch (err) {
+          console.log("Error: ", err);
+        }
+      },
+    }),
+
+    // -------------------------------------------------
+
     AddFriend: builder.mutation({
       query: (data) => ({
         url: "api/auth/AddFriend",
@@ -109,15 +155,15 @@ export const authApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
-        // -------------------------------------------------
+    // -------------------------------------------------
 
-        DeleteFriend: builder.mutation({
-          query: (data) => ({
-            url: "api/auth/deleteFriend",
-            method: "POST",
-            body: { ...data },
-          }),
-        }),
+    DeleteFriend: builder.mutation({
+      query: (data) => ({
+        url: "api/auth/deleteFriend",
+        method: "POST",
+        body: { ...data },
+      }),
+    }),
 
     // -------------------------------------------------
 
@@ -184,4 +230,7 @@ export const {
   useIsAFriendMutation,
   useGetMessagesMutation,
   useDeleteFriendMutation,
+  useSendFileMutation,
+  useMessageMutation,
+  useReadAllMessagesMutation,
 } = authApiSlice;
