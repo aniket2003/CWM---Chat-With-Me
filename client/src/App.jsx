@@ -29,7 +29,11 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      path: ["/login", "/"],
+      path: "/",
+      element: <GoogleAuthWrapperLogin/>,
+    },
+    {
+      path: "/login",
       element: <GoogleAuthWrapperLogin/>,
     },
     {
