@@ -16,8 +16,11 @@ const sendMessage = (io, userSocketMap, data) => {
     timestamp: timestamp,
   };
 
+  console.log(from, "   ", to);
+  console.log(fromSocketId, "   ", toSocketId);
   if (toSocketId) {
     io.to(toSocketId).emit("receiveMessage", dataemit);
+    io.to(toSocketId).emit("new-message",{from});
   }
   if (fromSocketId) {
     io.to(fromSocketId).emit("receiveMessage", dataemit);
@@ -58,6 +61,7 @@ const SendFile = async (io, userSocketMap, data) => {
 
     if (toSocketId) {
       io.to(toSocketId).emit("receiveMessage", Message);
+      io.to(toSocketId).emit("new-message",{from});
     }
     if (fromSocketId) {
       io.to(fromSocketId).emit("receiveMessage", Message);
@@ -95,6 +99,7 @@ const SocketAddFriend = async (io, userSocketMap, data) => {
       email: data.fromemail,
       ProfilePic: data.fromProfilePic,
       bio: data.frombio,
+      NumberofUnReadMessages: 0,
       append: false,
     };
     if (toSocketId) {
@@ -107,6 +112,7 @@ const SocketAddFriend = async (io, userSocketMap, data) => {
       email: data.toemail,
       ProfilePic: data.toProfilePic,
       bio: data.tobio,
+      NumberofUnReadMessages: 0,
       append: true,
     };
 

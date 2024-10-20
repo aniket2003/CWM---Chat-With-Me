@@ -3,10 +3,9 @@ import "../css/Chat.css";
 import { useSocket } from "../context/SocketContext";
 import { useGetMessagesMutation } from "../redux/auth/authApiSlice";
 import Loader from "./Loader";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../redux/auth/authSlice";
 import { selectCurrentSelectedUser } from "../redux/selecteduser/selecteduserSlice";
-import { getMessages, setMessages } from "../redux/messages/messagesSlice";
 import { format } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 
@@ -18,8 +17,7 @@ function MessageContainer() {
   const to = selectedUser._id;
   const [result, setResult] = useState([]);
   const messagesEndRef = useRef(null);
-
-  
+  const { newMessage, socket } = useSocket();
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -53,18 +51,11 @@ function MessageContainer() {
     return <Loader />;
   }
 
-  const { socket } = useSocket();
-
   useEffect(() => {
-    if (socket?.current) {
-      socket.current.on("receiveMessage", (data) => {
-        setResult((prev) => [...prev, data]);
-      });
-      return () => {
-        socket.current.off("receiveMessage");
-      };
+    if (newMessage) {
+      setResult((prev) => [...prev, newMessage]);
     }
-  }, [socket]);
+  }, [socket, newMessage]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behaviour: "smooth" });

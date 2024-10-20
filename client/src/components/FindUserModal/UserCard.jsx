@@ -22,21 +22,22 @@ const UserCardModal = ({ isOpen, onClose, onCloseAll,user, buttonMessage }) => {
     const friendid = user._id;
     setLoaderLoading(true);
     // console.log(user);
-    socket.current.emit("AddFriend", ({
-      from: currentUser._id,
-      to: user._id,
-      fromusername : currentUser.username,
-      fromemail: currentUser.email,
-      fromProfilePic: currentUser.ProfilePic,
-      frombio: currentUser.bio,
-      tousername: user.username,
-      toemail: user.email,
-      toProfilePic: user.ProfilePic,
-      tobio: user.bio,
-    }));
     const data = await addfriend({userid ,friendid}).unwrap();
     setLoaderLoading(false);
     if (data.status) {
+      socket.current.emit("AddFriend", ({
+        from: currentUser._id,
+        to: user._id,
+        fromusername : currentUser.username,
+        fromemail: currentUser.email,
+        fromProfilePic: currentUser.ProfilePic,
+        frombio: currentUser.bio,
+        tousername: user.username,
+        toemail: user.email,
+        toProfilePic: user.ProfilePic,
+        tobio: user.bio,
+      }));
+      // console.log("Selecting")
       onCloseAll();
     } else {
       console.log("Cannot Add Friend");

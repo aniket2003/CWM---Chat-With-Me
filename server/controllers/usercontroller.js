@@ -475,11 +475,13 @@ const ReadAllMessages = async(req,res)=>{
   try{
 
     const {from , to} = req.body;
-    
+    console.log(from, "  ", to );
+    console.log("DOing");
     await Messages.updateMany(
       {from , to , read: false},
       {$set: {read: true}}
     );
+    console.log("DOne");
     res.status(200).send({status: true});
 
   }catch(err){

@@ -7,6 +7,7 @@ import { selectCurrentUser } from "../../redux/auth/authSlice";
 import { useSelector } from "react-redux";
 import { useSocket } from "../../context/SocketContext";
 import Loader from "../Loader";
+import { removeFriend } from "../../redux/friends/friendsSlice";
 const UnFriendModal = ({ isOpen, onClose, user }) => {
   const { socket } = useSocket();
   const dispatch = useDispatch();
@@ -21,12 +22,13 @@ const UnFriendModal = ({ isOpen, onClose, user }) => {
       const userid = currentUser._id;
       const friendid = user._id;
       const response = await deleteFriend({userid, friendid}).unwrap();
-      socket.current.emit("DeleteFriend", ({
-        username: currentUser.username,
-        userid: userid,
-        friendid: friendid
-      }));
+      dispatch(removeFriend(user._id));
       if(response.status){
+        socket.current.emit("DeleteFriend", ({
+          username: currentUser.username,
+          userid: userid,
+          friendid: friendid
+        }));
           console.log("Deleted");
           setLoaderLoading(false);
       }

@@ -11,15 +11,17 @@ import {
   selectCurrentSelectedUser,
   setSelectedUser,
 } from "../redux/selecteduser/selecteduserSlice";
+import { setFriends, addFriend, removeFriend, selectFriendsList, clearUnreadMessages } from "../redux/friends/friendsSlice";
 import { useDispatch } from "react-redux";
 import { useSocket } from "../context/SocketContext";
 import Notification from "./Notification";
+import { v4 as uuidv4 } from "uuid";
 function FriendsContainer() {
   const user = useSelector(selectCurrentUser);
   const CurrentSelectedUser = useSelector(selectCurrentSelectedUser);
   const dispatch = useDispatch();
   const [getfriends, { isLoading }] = useGetFriendsMutation();
-  const [friends, setFriends] = useState([]);
+  const friends = useSelector(selectFriendsList);
   const [loading, setLoading] = useState(false);
   const { friendAdded, deletefriend, socket } = useSocket();
   const [readallmessages, isReading] = useReadAllMessagesMutation();
@@ -27,10 +29,10 @@ function FriendsContainer() {
   const [notificationMessage, setNotificationMessage] = useState("Get Ready");
 
   useEffect(() => {
-    if (friendAdded) {
-      console.log(friends);
-      setFriends((prev) => [...prev, friendAdded]);
+    if (friendAdded != null) {
+      dispatch(addFriend(friendAdded));
       if (!friendAdded.append) {
+      // dispatch(addFriend(friendAdded));
         setNotificationMessage(`${friendAdded.username} Added you as a Friend`);
         setShowNotification(true);
 
@@ -39,12 +41,12 @@ function FriendsContainer() {
         }, 6000);
       }
     }
-  }, [friendAdded, CurrentSelectedUser]);
+  }, [friendAdded]);
 
   useEffect(() => {
-    if (deletefriend) {
+    if (deletefriend != null) {
       if (deletefriend.friend) {
-        setFriends((prev) => removeFriend(prev, deletefriend.userid));
+        dispatch(removeFriend(deletefriend.userid));
         setNotificationMessage(`${deletefriend.username} UnFriended you !`);
         setShowNotification(true);
 
@@ -52,24 +54,22 @@ function FriendsContainer() {
           setShowNotification(false);
         }, 6000);
       } else {
-        setFriends((prev) => removeFriend(prev, deletefriend.friendid));
+        dispatch(removeFriend(deletefriend.friendid));
       }
     }
   }, [deletefriend]);
-
-  const removeFriend = (friends, id) => {
-    return friends.filter((friend) => friend._id !== id);
-  };
 
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
       const friends = await getfriends().unwrap();
       setLoading(false);
-      setFriends(friends);
+      dispatch(setFriends(friends));
     };
     fetch();
-  }, [user, CurrentSelectedUser]);
+  }, [user]);
+
+  const sortedFriends = [...friends].sort((a,b)=>b.NumberofUnReadMessages - a.NumberofUnReadMessages)
 
   const selectUser = async (selecteduser) => {
     const UserFormat = {
@@ -81,7 +81,7 @@ function FriendsContainer() {
     };
     const from = selecteduser._id;
     const to = user._id;
-    console.log(from , to);
+    dispatch(clearUnreadMessages({friendId: from}));
     await readallmessages({ from, to }).unwrap();
     dispatch(setSelectedUser(UserFormat));
   };
@@ -95,10 +95,10 @@ function FriendsContainer() {
       )}
 
       <div className="FoundedUsers">
-        {friends.length > 0 ? (
-          friends.map((user) => (
+        {sortedFriends.length > 0 ? (
+          sortedFriends.map((user) => (
             <div
-              key={user._id}
+              key={uuidv4()}
               className="FoundedUserListCard"
               onClick={() => selectUser(user)}
             >

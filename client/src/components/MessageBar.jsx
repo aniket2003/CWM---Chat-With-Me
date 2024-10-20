@@ -63,14 +63,14 @@ const MessageBar = () => {
       setSendFileLoader(false);
       cancelFileSelection();
     } else if (Message.trim() !== "") {
+      const message = Message;
+      setMessage("");
       socket.current.emit("send-message", {
-        message: Message,
+        message: message,
         messageType: "text",
         from: CurrentUser._id,
         to: CurrentSelectedUser._id,
       });
-      const message = Message;
-      setMessage("");
       try {
         const from = CurrentUser._id;
         const to = CurrentSelectedUser._id;

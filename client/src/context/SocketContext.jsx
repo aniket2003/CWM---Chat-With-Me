@@ -6,8 +6,20 @@ import { selectCurrentUser } from "../redux/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { setSelectedUser } from "../redux/selecteduser/selecteduserSlice";
 import { selectCurrentSelectedUser } from "../redux/selecteduser/selecteduserSlice";
-const SocketContext = createContext(null);
+import { NewMessageCount, clearUnreadMessages, selectFriendsList } from "../redux/friends/friendsSlice";
+import { useReadAllMessagesMutation } from "../redux/auth/authApiSlice";
+// import VideoCallModal from "../components/VideoCallModal/VideoCallModal";
+const SocketContext = createContext({
+    socket: null,
+    friendAdded: null,
+    deletefriend: null,
+    newMessage: null,
+    IncomingCall: false,
+    Caller: null,
+    closeModal: () => {},
+});
 
+// const SocketContext = createContext(null);
 
 export const useSocket = () =>{
     return useContext(SocketContext);
@@ -19,7 +31,17 @@ export const SocketProvider = ({children})=>{
     const CurrentSelectedUser = useSelector(selectCurrentSelectedUser);
     const [friendAdded , setFriendAdded] = useState(null);
     const [deletefriend , setdeletefriend] = useState(null);
+    const [readallmessages, {isReading}] = useReadAllMessagesMutation();
     const dispatch = useDispatch();
+    const [newMessage, setNewMessage] = useState(null);
+    const fr = useSelector(selectFriendsList);
+    const [IncomingCall, setIncomingCall] = useState(false);
+    const [Caller, setCaller] = useState(null);
+    const [callAccepted, setCallAccepted] = useState(false);
+    const [callerPeerId, setCallerPeerId] = useState(null);
+    const [callercanceledcall, setCallerCanceledCall] = useState(false);
+    const [receivercanceledcall, setReceiverCanceledCall] = useState(false);
+    const [callercanceleddata , setCallerCanceledData] = useState(null);
 
     useEffect(()=>{
 
@@ -44,6 +66,48 @@ export const SocketProvider = ({children})=>{
                     setdeletefriend(data);
                 })
 
+                socket.current.on("receiveMessage", (data) => {
+                    setNewMessage(data);
+                  });
+
+                socket.current.on("new-message",async(data) => {
+                    const {from} = data;
+                    if(CurrentSelectedUser?._id === from){
+                        console.log(CurrentSelectedUser._id);
+                        dispatch(clearUnreadMessages({friendId: from}));
+                        setTimeout(async () => {
+                            const to = UserInfo._id;
+                            const resp = await readallmessages({ from, to }).unwrap();
+                            if (resp.status) {
+                              console.log("Read");
+                            }
+                          }, 2000); 
+                    }else{
+                        dispatch(NewMessageCount({friendId: from}));
+                    }
+                  });
+
+                socket.current.on("incoming-call", (data)=>{
+                    console.log("Getting the call");
+                    setIncomingCall(true);
+                    setCaller(data);
+                })
+
+                socket.current.on("call-accepted", (data)=>{
+                    const {from, peerId} = data;
+                    setCallAccepted(true);
+                    setCallerPeerId(peerId);
+                })
+
+                socket.current.on("user-cancel-call", (data)=>{
+                    const {from, to , username, caller} = data;
+                    if(caller){
+                        setCallerCanceledCall(true);
+                    }else{
+                        setReceiverCanceledCall(true);
+                    }
+                    setCallerCanceledData(data);
+                })
                 
                 return ()=>{
                     if(socket.current){
@@ -52,10 +116,14 @@ export const SocketProvider = ({children})=>{
                 };
             }
 
-    },[UserInfo]);
+    },[UserInfo, CurrentSelectedUser]);
+
+    const closeModal = ()=>{
+        setIncomingCall(false);
+    }
 
     return (
-        <SocketContext.Provider value={{socket, friendAdded, deletefriend}}>
+        <SocketContext.Provider value={{socket, friendAdded, deletefriend, newMessage, IncomingCall, Caller ,closeModal, callAccepted, callerPeerId, callercanceledcall, receivercanceledcall, callercanceleddata}}>
             {children}
         </SocketContext.Provider>
     );
