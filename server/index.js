@@ -16,7 +16,7 @@ db() ;
 
 const cors = require("cors");
 app.use(cors({
-  origin: process.env.ORIGIN,
+  origin: "https://cwm-chat-with-me.onrender.com",
   credentials:true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
