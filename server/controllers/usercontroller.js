@@ -116,7 +116,7 @@ const register = async (req, res, next) => {
     res.cookie("jwt", refreshToken, {
       httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -173,7 +173,7 @@ const GoogleOAuth = async (req, res, next) => {
     res.cookie("jwt", refreshToken, {
       httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -210,7 +210,7 @@ const login = async (req, res, next) => {
     res.cookie("jwt", refreshToken, {
       httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
