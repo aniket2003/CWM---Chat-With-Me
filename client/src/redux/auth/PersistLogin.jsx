@@ -40,7 +40,7 @@ const PersistLogin = ()=>{
             if(!token && persist) verifyRefreshToken()
         }
       return () => effectRan.current = true;
-    },[])
+    },[token, persist, refresh]);
 
 
     let content
