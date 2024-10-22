@@ -3,7 +3,7 @@ import { useSocket } from '../../context/SocketContext';
 import Peer from "peerjs";
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../../redux/auth/authSlice';
-function VideoCallModal({Caller}) {
+function VideoCallModal({Caller, shouldCleanup}) {
 
     const {socket, closeModal} = useSocket();
     const localVideoRef = useRef();
@@ -75,15 +75,15 @@ function VideoCallModal({Caller}) {
 
 
     useEffect(() => {
-      return () => {
-        localVideoRef.current.srcObject.getTracks().forEach(track=> track.stop());
-        remoteVideoRef.current.srcObject.getTracks().forEach(track=> track.stop());
-        if (peerInstance) {
-          peerInstance.destroy();
+      if (shouldCleanup) {
+        if (localVideoRef.current && localVideoRef.current.srcObject) {
+          localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
         }
-      };
-    }, [peerInstance]);
-
+        if (remoteVideoRef.current && remoteVideoRef.current.srcObject) {
+          remoteVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        }
+      }
+    }, [shouldCleanup]);
 
 
   return (

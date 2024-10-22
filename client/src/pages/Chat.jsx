@@ -51,7 +51,7 @@ function Chat() {
       )} */}
         {isUserSelected ?  <ChatContainer/> : <EmptyChatContainer/>}
       {VideoModal && (
-                <VideoCallModal Caller={Caller}/>
+                <VideoCallModal Caller={Caller} shouldCleanup={!VideoModal}/>
         )}
       </div>
     </div>
