@@ -73,7 +73,6 @@ export const SocketProvider = ({children})=>{
                 socket.current.on("new-message",async(data) => {
                     const {from} = data;
                     if(CurrentSelectedUser?._id === from){
-                        console.log(CurrentSelectedUser._id);
                         dispatch(clearUnreadMessages({friendId: from}));
                         setTimeout(async () => {
                             const to = UserInfo._id;
@@ -88,7 +87,6 @@ export const SocketProvider = ({children})=>{
                   });
 
                 socket.current.on("incoming-call", (data)=>{
-                    console.log("Getting the call");
                     setIncomingCall(true);
                     setCaller(data);
                 })

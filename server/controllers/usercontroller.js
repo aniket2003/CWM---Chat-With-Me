@@ -128,7 +128,6 @@ const register = async (req, res, next) => {
 };
 
 const GoogleOAuth = async (req, res, next) => {
-  console.log("in the server!!!");
 
   try {
     const { code } = req.query;
@@ -233,8 +232,6 @@ const logout = (req, res) => {
 
 const refresh = (req, res) => {
   const cookies = req.cookies;
-  console.log("Req: ", req);
-  console.log("Cookies: ", cookies);
   if (!cookies?.jwt) return res.status(401).json({ message: "unauthorized" });
 
   const refreshToken = cookies.jwt;
@@ -345,7 +342,6 @@ const AddFriend = async (req, res) => {
 const DeleteFriends = async (req, res) => {
   try {
     const { userid, friendid } = req.body;
-    console.log(userid, " ", friendid);
 
     await Friends.updateOne(
       { user: userid },
@@ -362,7 +358,6 @@ const DeleteFriends = async (req, res) => {
     });
 
     if (conversation) {
-      console.log("Deleting");
       await Messages.deleteMany({ _id: { $in: conversation.messages } });
       await Conversations.deleteOne({ _id: conversation._id });
     }
@@ -417,7 +412,6 @@ const GetFriends = async (req, res) => {
 const IsAFriend = async (req, res) => {
   try {
     const { userid, friendid } = req.body;
-    console.log("IDs: ", userid, "   ", friendid);
     const user = await Friends.findOne({
       user: userid,
       friends: {
@@ -476,13 +470,10 @@ const ReadAllMessages = async(req,res)=>{
   try{
 
     const {from , to} = req.body;
-    console.log(from, "  ", to );
-    console.log("DOing");
     await Messages.updateMany(
       {from , to , read: false},
       {$set: {read: true}}
     );
-    console.log("DOne");
     res.status(200).send({status: true});
 
   }catch(err){

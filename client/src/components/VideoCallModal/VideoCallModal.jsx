@@ -19,7 +19,6 @@ function VideoCallModal({Caller}) {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
             
             if(localVideoRef.current){
-                console.log("Vidoe captured")
                 localVideoRef.current.srcObject = stream;
             }
       
@@ -33,7 +32,6 @@ function VideoCallModal({Caller}) {
 
                 call.answer(stream);
                 call.on("stream", (remotestream)=>{
-                    console.log("done");
                     if(remoteVideoRef.current){
                         remoteVideoRef.current.srcObject = remotestream;
                     }
@@ -74,6 +72,17 @@ function VideoCallModal({Caller}) {
 
         closeModal();
     }
+
+
+    useEffect(() => {
+      return () => {
+        localVideoRef.current.srcObject.getTracks().forEach(track=> track.stop());
+        remoteVideoRef.current.srcObject.getTracks().forEach(track=> track.stop());
+        if (peerInstance) {
+          peerInstance.destroy();
+        }
+      };
+    }, [peerInstance]);
 
 
 

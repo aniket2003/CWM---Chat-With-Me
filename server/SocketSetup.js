@@ -50,7 +50,6 @@ const setSocket = (server) => {
         ProfilePic: ProfilePic,
         peerId: peerId,
       }
-      console.log(from,"  " ,to);
       io.to(toSocketId).emit("incoming-call",datato);
     }); 
 

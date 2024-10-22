@@ -13,7 +13,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           await handleAuth(data, dispatch);
-          // dispatch(apiSlice.util.resetApiState());
         } catch (err) {
           console.log("Error: ", err);
         }
@@ -30,7 +29,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           await handleAuth(data, dispatch);
-          // dispatch(apiSlice.util.resetApiState());
         } catch (err) {
           console.log("Error: ", err);
         }
@@ -56,7 +54,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          console.log("getting2");
           await queryFulfilled;
         } catch (err) {
           console.log("Error: ", err);
@@ -73,8 +70,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const friends = await queryFulfilled;
-          console.log(friends);
+          await queryFulfilled;
         } catch (err) {
           console.log("Error: ", err);
         }
@@ -111,8 +107,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const data = await queryFulfilled;
-          console.log(data);
+          await queryFulfilled;
         } catch (err) {
           console.log("Error: ", err);
         }
@@ -129,8 +124,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const data = await queryFulfilled;
-          console.log(data);
+          await queryFulfilled;
         } catch (err) {
           console.log("Error: ", err);
         }
@@ -147,8 +141,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const friends = await queryFulfilled;
-          console.log(friends);
+          await queryFulfilled;
         } catch (err) {
           console.log("Error: ", err);
         }
@@ -210,7 +203,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
 });
 
 const handleAuth = async (data, dispatch) => {
-  console.log("data: ", data);
   dispatch(setCredentials({ accessToken: data.authtoken, user: null }));
   const UserInfo = await dispatch(
     authApiSlice.endpoints.getUser.initiate()

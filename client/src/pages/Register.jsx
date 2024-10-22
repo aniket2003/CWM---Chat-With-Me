@@ -45,7 +45,6 @@ function Register() {
     });
     try {
       if (res.status) {
-        console.log("User Added!");
         navigate("/login");
       } else {
         console.log("User Not Added!");

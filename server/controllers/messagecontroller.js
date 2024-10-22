@@ -16,8 +16,6 @@ const sendMessage = (io, userSocketMap, data) => {
     timestamp: timestamp,
   };
 
-  console.log(from, "   ", to);
-  console.log(fromSocketId, "   ", toSocketId);
   if (toSocketId) {
     io.to(toSocketId).emit("receiveMessage", dataemit);
     io.to(toSocketId).emit("new-message",{from});
@@ -92,7 +90,7 @@ const SocketAddFriend = async (io, userSocketMap, data) => {
     const { from, to } = data;
     const toSocketId = userSocketMap.get(to);
     const fromSocketId = userSocketMap.get(from);
-    console.log(toSocketId);
+
     const newData = {
       _id: data.from,
       username: data.fromusername,

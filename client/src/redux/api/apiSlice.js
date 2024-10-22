@@ -17,7 +17,6 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth = async (args, api, extraOptions)=>{
 
     let result = await baseQuery(args, api, extraOptions)
-    console.log("apiSlice 20 , Result:  ", result);
     if(result?.error?.status === 403){
         const refreshres = await baseQuery('api/auth/refresh', api,extraOptions)
         if(refreshres?.data){
