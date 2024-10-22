@@ -11,6 +11,7 @@ const PersistLogin = ()=>{
 
     const [persist] = usePersist();
     const token = useSelector(selectCurrentToken)
+    console.log("token: ", token);
     const effectRan = useRef(false)
 
     const [trueSuccess, setTrueSuccess] = useState(false)
@@ -29,15 +30,18 @@ const PersistLogin = ()=>{
             const verifyRefreshToken = async ()=>{
                 console.log('Verifying the refresh token')
                 try{
-                    console.log(token)
-                    await refresh()
+                    console.log("Verifying token: ",token)
+                    const data = await refresh().unwrap();
+                    console.log("Response: ",data);
                     setTrueSuccess(true)
                 }catch(err){
                     console.log(err)
                 }
             }
 
-            if(!token && persist) verifyRefreshToken()
+            if(!token && persist){
+                verifyRefreshToken();
+            } 
         }
       return () => effectRan.current = true;
     },[token, persist, refresh]);
