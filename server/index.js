@@ -15,13 +15,15 @@ const db = require("./db");
 db() ; 
 
 const cors = require("cors");
-app.use(cors({
+const corsOptions = {
   origin: process.env.ORIGIN,
   credentials:true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
   optionsSuccessStatus: 204
-}));
+}
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(bodyParser.urlencoded({
   extended: true

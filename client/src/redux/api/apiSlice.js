@@ -17,12 +17,11 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth = async (args, api, extraOptions)=>{
 
     let result = await baseQuery(args, api, extraOptions)
+    console.log("apiSlice 20 , Result:  ", result);
     if(result?.error?.status === 403){
-       console.log("trying...")
         const refreshres = await baseQuery('api/auth/refresh', api,extraOptions)
         if(refreshres?.data){
             api.dispatch(setCredentials({...refreshres.data}))
-            console.log("done")
             result = await baseQuery(args, api, extraOptions)
 
         }else{
