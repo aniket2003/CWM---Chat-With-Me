@@ -233,7 +233,8 @@ const logout = (req, res) => {
 
 const refresh = (req, res) => {
   const cookies = req.cookies;
-  console.log(cookies);
+  console.log("Req: ", req);
+  console.log("Cookies: ", cookies);
   if (!cookies?.jwt) return res.status(401).json({ message: "unauthorized" });
 
   const refreshToken = cookies.jwt;
